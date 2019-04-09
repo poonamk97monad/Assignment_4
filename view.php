@@ -5,24 +5,26 @@ include('User.php');
 require "predis/autoload.php";
 session_start();
 
-if(!isset($_SESSION['userid'])) {
-    # redirect to the login page
-    header('Location: index.php?msg=' . urlencode('Login first.'));
-    exit();
-}
-    $objUser = new User();
-    //fetching data
-    $arrResult = $objUser->getData();
+    if(!isset($_SESSION['userid'])) {
+        # redirect to the login page
+        header('Location: index.php?msg=' . urlencode('Login first.'));
+        exit();
+    }
+        $objUser = new User();
+        //fetching data
+        $arrResult = $objUser->getData();
 
 ?>
 <?php
-if(isset($_GET['fav'])) {
-    $strFav     = $_GET['fav'];
-    $intId      = $_GET['id'];
-    $strEmail   = $_GET['email'];
-    (new User())->setFavorite($intId);
 
-}
+    if(isset($_GET['fav'])) {
+        $strFav     = $_GET['fav'];
+        $intId      = $_GET['id'];
+        $strEmail   = $_GET['email'];
+        (new User())->setFavorite($intId);
+
+    }
+
 ?>
 <?php
 
@@ -44,9 +46,13 @@ if(isset($_GET['search'])) {
                                 'filter' => ['term' => [ 'usertype' => $strUserType ]]
                         ]
                 ],
-            /*'sort' => [
-               [ 'fname'=>'asc']]*/
-            ]
+            /*"settings" => [
+                "index" => [
+                    "sort.field" => ["fname"],
+                    "sort.order" => ["asc"]
+                ]
+            ]*/
+        ]
         ];
     $arrMixSql = $client->search($arrMixParams);
     /*echo '<pre>',print_r($query),'</pre>';*/
@@ -141,14 +147,14 @@ if($arrMixSql['hits'] >= 1) {
                                 </thead>
                                 <?php
                                 if(isset($arrSearchResults)) {
-                                    foreach ($arrSearchResults as $r) {
+                                    foreach ($arrSearchResults as $strSearch) {
                                         echo '<tbody>';
                                         echo '<tr>';
-                                        echo '<td>' . $r['_source']['id'] . '</td>';
-                                        echo '<td>' . $r['_source']['fname'] . '</td>';
-                                        echo '<td>' . $r['_source']['lname'] . '</td>';
-                                        echo '<td>' . $r['_source']['email'] . '</td>';
-                                        echo '<td>' . $r['_source']['usertype'] . '</td>';
+                                        echo '<td>' . $strSearch['_source']['id'] . '</td>';
+                                        echo '<td>' . $strSearch['_source']['fname'] . '</td>';
+                                        echo '<td>' . $strSearch['_source']['lname'] . '</td>';
+                                        echo '<td>' . $strSearch['_source']['email'] . '</td>';
+                                        echo '<td>' . $strSearch['_source']['usertype'] . '</td>';
                                         echo '</tr>';
                                         echo '</tbody>';
                                     }
@@ -224,18 +230,18 @@ if($arrMixSql['hits'] >= 1) {
                                 </tr>
                                 </thead>
                                 <?php
-                                foreach ($arrResult as $key => $res) {
-                                    $boolIsFavoritted = (new User())->isFavoritted($res["id"]);
-                                    $strUnFovrites = 'UnFovrites';
-                                    $strFovrites   = 'Fovrites';
+                                foreach ($arrResult as $key => $strResult) {
+                                    $boolIsFavoritted = (new User())->isFavoritted($strResult["id"]);
+                                    $strUnFovrites    = 'UnFovrites';
+                                    $strFovrites      = 'Fovrites';
                                     echo'<tbody>';
                                     echo'<tr>';
-                                    echo'<td>'.$res['id'].'</td>';
-                                    echo'<td>'.$res['fname'].'</td>';
-                                    echo'<td>'.$res['lname'].'</td>';
-                                    echo'<td>'.$res['email'].'</td>';
-                                    echo'<td>'.$res['phone'].'</td>';
-                                    echo'<td>'.$res['usertype'].'</td>';
+                                    echo'<td>'.$strResult['id'].'</td>';
+                                    echo'<td>'.$strResult['fname'].'</td>';
+                                    echo'<td>'.$strResult['lname'].'</td>';
+                                    echo'<td>'.$strResult['email'].'</td>';
+                                    echo'<td>'.$strResult['phone'].'</td>';
+                                    echo'<td>'.$strResult['usertype'].'</td>';
                                     echo'<td>';
                                     if($boolIsFavoritted == 1) {
                                         echo 'YES';
@@ -244,16 +250,16 @@ if($arrMixSql['hits'] >= 1) {
                                         echo 'NO';
                                     }
                                     echo '</td>';
-                                    echo'<td><a name="delete" class="btn btn-danger" href="check.php?idd='.$res["id"].'"> Delete</a></td>';
-                                    echo'<td><a class="btn btn-info" href="update.php?id='.$res["id"].'&fname='.$res["fname"].'&lname='.$res["lname"].'&email='.$res["email"].'&phone='.$res["phone"].'&about='.$res["about"].'&usertype='.$res["usertype"].'&class_name='.$res["class_name"].'&is_monitor='.$res["is_monitor"].'&studying_subjects='.$res["studying_subjects"].'&deparment_name='.$res["deparment_name"].'&is_hod='.$res["is_hod"].'&teaching_subjects='.$res["teaching_subjects"].'">Edit</a></td>';
+                                    echo'<td><a name="delete" class="btn btn-danger" href="check.php?idd='.$strResult["id"].'"> Delete</a></td>';
+                                    echo'<td><a class="btn btn-info" href="update.php?id='.$strResult["id"].'&fname='.$strResult["fname"].'&lname='.$strResult["lname"].'&email='.$strResult["email"].'&phone='.$strResult["phone"].'&about='.$strResult["about"].'&usertype='.$strResult["usertype"].'&class_name='.$strResult["class_name"].'&is_monitor='.$strResult["is_monitor"].'&studying_subjects='.$strResult["studying_subjects"].'&deparment_name='.$strResult["deparment_name"].'&is_hod='.$strResult["is_hod"].'&teaching_subjects='.$strResult["teaching_subjects"].'">Edit</a></td>';
                                     echo'<td><form action="view.php" method="get">';
 
                                     if($boolIsFavoritted == 1) {
-                                        echo '<a name="fav" class="btn btn-success" href="view.php?fav='.$strUnFovrites.'&id='.$res["id"].'&email='.$res["email"].'" value="UnFavorites">UnFavorites</a>';
+                                        echo '<a name="fav" class="btn btn-success" href="view.php?fav='.$strUnFovrites.'&id='.$strResult["id"].'&email='.$strResult["email"].'" value="UnFavorites">UnFavorites</a>';
                                     }
 
                                     else {
-                                        echo '<a name="fav" class="btn btn-success" href="view.php?fav='.$strFovrites.'&id='.$res["id"].'&email='.$res["email"].'" value="Favorites"> Favorites </a>';
+                                        echo '<a name="fav" class="btn btn-success" href="view.php?fav='.$strFovrites.'&id='.$strResult["id"].'&email='.$strResult["email"].'" value="Favorites"> Favorites </a>';
                                     }
                                     echo'</td> </form>';
                                     echo'</tr>';
