@@ -43,6 +43,7 @@
 
           $arrStrResult = $objUser->getData();
           foreach ($arrStrResult as $intKey => $strResult) {
+
               $intId         = $strResult['id'];
               $strFristName  = $strResult['fname'];
               $strLastName   = $strResult['lname'];
@@ -51,7 +52,7 @@
               $strAbout      = $strResult['about'];
               $strUserType   = $strResult['usertype'];
 
-              $arrMixIndexed = $client->index([
+              $arrMixIndexed = $objClient->index([
                   'index'    => 'userdata',
                   'type'     => 'user',
                   'id'       => $intId,
@@ -65,9 +66,6 @@
                           'usertype' => $strUserType,
                   ]
               ]);
-               /*if ($arrMixIndexed) {
-                    print_r($arrMixIndexed);
-               }*/
           }
       }
   }
@@ -76,26 +74,22 @@
         if(isset($_POST["login"])) {
             /** @var object $obj */
             $objLogin = $objAuth->loginUser();
-
             Predis\Autoloader::register();
-            $redis       = new Predis\Client();
-            $strUserId   = $_POST['userid'];
-            $strPassword = $_POST['password'];
-            $redis->connect('127.0.0.1', 6379);
+            $objRedis       = new Predis\Client();
+            $strUserId      = $_POST['userid'];
+            $strPassword    = $_POST['password'];
+            $objRedis->connect('127.0.0.1', 6379);
             echo "Last Login";
             echo "<br><hr><br>";
             //store data in redis list
             $redis->lpush("lastlogin", $strUserId, date("M,d,Y h:i:s A"));
-
         }
   }
-
 
 ?>
 <?php
 
    if(isset($_POST["logout"])) {
-
        $objLogout = $objAuth->logoutUser();
    }
 
@@ -103,7 +97,6 @@
 <?php
 
 if(isset($_POST["contact"])) {
-
     $objContact = $objUser->contactUser();
 }
 
@@ -129,9 +122,9 @@ if(isset($_POST["contact"])) {
             switch ($strUserType) {
                 case 'student':
                     $arrMixAllFields = $objStudent->updateFields();
-                    $arrStrResult = $objUser->getData();
-
+                    $arrStrResult    = $objUser->getData();
                     foreach ($arrStrResult as $intKey => $strResult) {
+
                         $intId        = $strResult['id'];
                         $strFristName = $strResult['fname'];
                         $strLastName  = $strResult['lname'];
@@ -140,7 +133,7 @@ if(isset($_POST["contact"])) {
                         $strAbout     = $strResult['about'];
                         $strUserType  = $strResult['usertype'];
 
-                        $arrMixIndexed = $client->index([
+                        $arrMixIndexed = $objClient->index([
                             'index' => 'userdata',
                             'type'  => 'user',
                             'id'    => $intId,
@@ -154,15 +147,12 @@ if(isset($_POST["contact"])) {
                                 'usertype' => $strUserType,
                             ]
                         ]);
-                        /*if ($arrMixIndexed) {
-                             print_r($arrMixIndexed);
-                        }*/
                     }
-
                     break;
+
                 case 'teacher':
                     $arrMixAllFields = $objTeacher->updateFields();
-                    $arrStrResult = $objUser->getData();
+                    $arrStrResult    = $objUser->getData();
 
                     foreach ($arrStrResult as $intKey => $strResult) {
                         $intId        = $strResult['id'];
@@ -173,7 +163,7 @@ if(isset($_POST["contact"])) {
                         $strAbout     = $strResult['about'];
                         $strUserType  = $strResult['usertype'];
 
-                        $arrMixIndexed = $client->index([
+                        $arrMixIndexed = $objClient->index([
                             'index' => 'userdata',
                             'type'  => 'user',
                             'id'    => $intId,
@@ -187,11 +177,7 @@ if(isset($_POST["contact"])) {
                                 'usertype' => $strUserType,
                             ]
                         ]);
-                        /*if ($arrMixIndexed) {
-                             print_r($arrMixIndexed);
-                        }*/
                     }
-
                     break;
                 default:
                     echo "Select User Type";die;

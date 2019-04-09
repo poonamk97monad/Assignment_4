@@ -32,21 +32,19 @@ class Teacher extends UserData
             }
         }
         foreach ($arrStrFields as $intCounter => $strField) {
-
             if(isset($_POST[$strField])) {
                 $strQueryBuild .= $strField.'="'.$_POST[$strField].'"';
-
                 if(isset($arrStrFields[$intCounter+1])) {
                     $strQueryBuild = $strQueryBuild . ',';
                 }
-
             }
         }
-        $strSql = "update users SET $strQueryBuild where id = '$intId'";
-        $arrObjResult = mysqli_query($this->objConnection, $strSql);
+        $strQuery = "update users SET $strQueryBuild where id = '$intId'";
+        $arrObjResult = mysqli_query($this->objConnection, $strQuery);
         if (!$arrObjResult) {
             die("record not update");
-        } else {
+        }
+        else {
             echo ("Update successfully");
             header('Location: update.php?strSuccess=' . urlencode('Success! Update successfully'));
         }

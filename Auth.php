@@ -9,23 +9,21 @@ class Auth extends Connection
      * @return void
      */
     public function loginUser() {
-        $strUserId   = $_POST['userid'];
-        $strPassword = $_POST['password'];
+        $strEmailId   = $_POST['userid'];
+        $strPassword  = $_POST['password'];
         // To select email and password with mysqli database
-        $arrQuery       = "select * from userdata where email = '$strUserId' and password = '$strPassword'";
-        $arrObjResult   = mysqli_query($this->objConnection,$arrQuery);
+        $arrStrQuery    = "select * from userdata where email = '$strEmailId' and password = '$strPassword'";
+        $arrObjResult   = mysqli_query($this->objConnection,$arrStrQuery);
         if(mysqli_num_rows($arrObjResult) > 0) {
             session_start();
-            $_SESSION['userid']   = $strUserId;
+            $_SESSION['userid']   = $strEmailId;
             $_SESSION['password'] = $strPassword;
             header("location:home.php");
         }
         else {
             header('Location: index.php?msg=' . urlencode('User_Not_Valid'));
         }
-
     }
-
     /**
      * User logout function
      * @return void

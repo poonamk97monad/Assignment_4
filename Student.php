@@ -10,20 +10,20 @@ class Student extends UserData
      * @return array - $arrStrFields
      */
     public function getFields() {
-        $arrStrFields = array('class_name','is_monitor','studying_subjects');
+        $arrStrFields = array('class_name', 'is_monitor', 'studying_subjects');
         return $arrStrFields;
     }
+
     /**
      * To update All fields
      * @return void
      */
     public function updateFields() {
 
-        $intId = $_POST['id'];
-
+        $intId           = $_POST['id'];
         $arrStrAllFields = $this->getAllFields();
-        $arrStrFields = $this->getFields();
-        $strQueryBuild = "";
+        $arrStrFields    = $this->getFields();
+        $strQueryBuild   = "";
         foreach ($arrStrAllFields as $intCounter => $strField) {
             if(isset($_POST[$strField])) {
                 $strQueryBuild .= $strField.'="'.$_POST[$strField].'"';
@@ -44,9 +44,8 @@ class Student extends UserData
             }
         }
 
-        $strSql = "update users SET $strQueryBuild where id = '$intId'";
-
-            $arrObjResult = mysqli_query($this->objConnection, $strSql);
+        $strQuery = "update users SET $strQueryBuild where id = '$intId'";
+        $arrObjResult = mysqli_query($this->objConnection, $strQuery);
             if (!$arrObjResult) {
                 die("record not update");
             }

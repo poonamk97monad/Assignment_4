@@ -2,20 +2,9 @@
 
 include_once 'Connection.php';
 require 'init.php';
-/*require "predis/autoload.php";*/
 
 class User extends Connection
 {
-    /*public $objRedis;
-
-    public function __construct()
-    {
-        Predis\Autoloader::register();
-        $redis   = new Predis\Client();
-        $redis->connect('127.0.0.1', 6379);
-        $this->objRedis = $redis;
-    }*/
-
     /**
      * To insert data in database
      * @return void
@@ -33,26 +22,23 @@ class User extends Connection
         $strMonitor        = $_POST['is_monitor'];
         $strStudySubjects  = $_POST['studying_subjects'];
         $strDeparmentName  = $_POST['deparment_name'];
-        $strHod            = $_POST['is_hod'];
+        $strIsHead         = $_POST['is_hod'];
         $strTeachSubjects  = $_POST['teaching_subjects'];
 
-        $strSql = "insert into userdata(fname,lname,email,phone,about,password,usertype,class_name,is_monitor,studying_subjects,deparment_name,is_hod,teaching_subjects,favtype) values('$strFirstName ','$strLastName','$strEmailId','$intPhoneNumber','$strAbout','$strPassword','$strUserType','$strClassName','$strMonitor','$strStudySubjects','$strDeparmentName','$strHod','$strTeachSubjects','$strFavType')";
-
+        $strQuery = "insert into userdata(fname,lname,email,phone,about,password,usertype,class_name,is_monitor,studying_subjects,deparment_name,is_hod,teaching_subjects,favtype) values('$strFirstName ','$strLastName','$strEmailId','$intPhoneNumber','$strAbout','$strPassword','$strUserType','$strClassName','$strMonitor','$strStudySubjects','$strDeparmentName','$strIsHead','$strTeachSubjects')";
         $_SESSION['message'] = "Address saved";
-        $arrObjResult = mysqli_query($this->objConnection, $strSql);
+        $arrObjResult = mysqli_query($this->objConnection, $strQuery);
         if (!$arrObjResult) {
             die("Not register");
         }
         else {
             ?>
-
             <script type = "text/javascript">
                 alert("register successfully");
                 window.location = "index.php";
             </script>
             <?php
         }
-
     }
     /**
      * To getdata form database
@@ -93,14 +79,17 @@ class User extends Connection
         }
     }
 
-
+    /**
+     * To add contact details in database
+     * @return void
+     */
     public function contactUser() {
         $strName      = $_POST['name'];
         $strEmailId   = $_POST['email'];
         $strComment   = $_POST['comments'];
-        $strSql       = "insert into contact(name,email,comment) values('$strName ','$strEmailId','$strComment')";
+        $strQuery     = "insert into contact(name,email,comment) values('$strName ','$strEmailId','$strComment')";
         $_SESSION['message'] = "Address saved";
-        $arrObjResult = mysqli_query($this->objConnection, $strSql);
+        $arrObjResult = mysqli_query($this->objConnection, $strQuery);
         if (!$arrObjResult) {
             die("Not register");
         }
@@ -120,8 +109,8 @@ class User extends Connection
      * @return array|bool
      */
     public function getLastUser($strLastUser, $password) {
-        $query        = "SELECT * FROM userdata WHERE email ='$strLastUser' and password ='$password'";
-        $arrObjResult = $this->objConnection->query($query);
+        $strQuery     = "SELECT * FROM userdata WHERE email ='$strLastUser' and password ='$password'";
+        $arrObjResult = $this->objConnection->query($strQuery);
 
         if ($arrObjResult == false) {
             return false;
@@ -139,10 +128,10 @@ class User extends Connection
      */
     public function isFavoritted($intUserId) {
         Predis\Autoloader::register();
-        $redis   = new Predis\Client();
-        $redis->connect('127.0.0.1', 6379);
+        $objRedis   = new Predis\Client();
+        $objRedis->connect('127.0.0.1', 6379);
 
-        return $redis->SISMEMBER('favorite:user', $intUserId);
+        return $objRedis->SISMEMBER('favorite:user', $intUserId);
     }
 
 
@@ -151,19 +140,15 @@ class User extends Connection
      */
     public function setFavorite($intUserId) {
         Predis\Autoloader::register();
-        $redis   = new Predis\Client();
-        $redis->connect('127.0.0.1', 6379);
-
+        $objRedis   = new Predis\Client();
+        $objRedis->connect('127.0.0.1', 6379);
         $boolIsFavoritted = $this->isFavoritted($intUserId);
-
         if($boolIsFavoritted == 1) {
-            $redis->srem('favorite:user', $intUserId);
+            $objRedis->srem('favorite:user', $intUserId);
         }
         else {
-            $redis->sadd('favorite:user', $intUserId);
-
+            $objRedis->sadd('favorite:user', $intUserId);
         }
-
     }
 
 }

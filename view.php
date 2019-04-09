@@ -29,36 +29,34 @@
 ?>
 <?php
 
-if(isset($_GET['search'])) {
-
-    $strSearch   = $_GET['search'];
-    $strUserType = $_GET['user_type'];
-    $strSortType = $_GET['sort'];
-    $arrMixParams  = [
-        'index' => 'userdata',
-        'type'  => 'user',
-        'body' => [
-                'query' => [
-                        'bool' => [
-                                'must' => ['match' => [ 'fname' => $strSearch ]],
-                              /*'must' => ['match' => [ 'lname' => $search ]],
-                                'must' => ['match' => [ 'fname' => $search ]],*/
-                                'filter' => ['term' => [ 'usertype' => $strUserType ]]
-                        ]
-                ],
-               "sort"=> [
-                  [ "_id"=> "asc" ]
-               ]
-        ]
-        ];
-    $arrMixSql = $client->search($arrMixParams);
-    /*echo '<pre>',print_r($query),'</pre>';*/
-}
-
-if($arrMixSql['hits'] >= 1) {
-    $arrSearchResults = $arrMixSql['hits']['hits'];
-    /* print_r($searchResults);*/
-}
+    if(isset($_GET['search'])) {
+        $strSearch   = $_GET['search'];
+        $strUserType = $_GET['user_type'];
+        $strSortType = $_GET['sort'];
+        $arrMixParams  = [
+            'index' => 'userdata',
+            'type'  => 'user',
+            'body' => [
+                    'query' => [
+                            'bool' => [
+                                    'must' => ['match' => [ 'fname' => $strSearch ]],
+                                  /*'must' => ['match' => [ 'lname' => $search ]],
+                                    'must' => ['match' => [ 'fname' => $search ]],*/
+                                    'filter' => ['term' => [ 'usertype' => $strUserType ]]
+                            ]
+                    ],
+                   "sort"=> [
+                      [ "_id"=> "asc" ]
+                   ]
+            ]
+            ];
+        $arrMixQuery = $objClient->search($arrMixParams);
+        /*echo '<pre>',print_r($query),'</pre>';*/
+    }
+    if($arrMixQuery ['hits'] >= 1) {
+        $arrSearchResults = $arrMixQuery ['hits']['hits'];
+        /* print_r($searchResults);*/
+    }
 
 ?>
 <!DOCTYPE html>
@@ -76,7 +74,6 @@ if($arrMixSql['hits'] >= 1) {
             $(document).ready(function() {
                 $('[data-toggle="popover"]').popover();
             });
-
         </script>
     </head>
     <body class="body-back text-light">
@@ -124,7 +121,6 @@ if($arrMixSql['hits'] >= 1) {
                             <option value="student" >Student</option>
                             <option value="teacher" >Teacher</option>
                         </select>
-
                     </form>
                     </h4>
                     <table  class=" table table-dark table-striped table-sm">
@@ -168,8 +164,8 @@ if($arrMixSql['hits'] >= 1) {
                             <h6 class="card-title pname">
                                 <?php
                                 Predis\Autoloader::register();
-                                $redis = new Predis\Client();
-                                $arrUserLogin = $redis->lrange("lastlogin" ,0,50);
+                                $objRedis = new Predis\Client();
+                                $arrUserLogin = $objRedis->lrange("lastlogin" ,0,50);
                                 foreach ($arrUserLogin as $strUser) {
                                     echo $strUser.'<br>';
                                 }
@@ -214,7 +210,7 @@ if($arrMixSql['hits'] >= 1) {
                                 </tr>
                                 </thead>
                                 <?php
-                                foreach ($arrResult as $key => $strResult) {
+                                foreach ($arrResult as $intKey => $strResult) {
                                     $boolIsFavoritted = (new User())->isFavoritted($strResult["id"]);
                                     $strUnFovrites    = 'UnFovrites';
                                     $strFovrites      = 'Fovrites';

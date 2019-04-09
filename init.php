@@ -1,10 +1,9 @@
 <?php
-use Elasticsearch\ClientBuilder;
 
 require 'vendor/autoload.php';
 
-$hosts = ['localhost:9200'];
+$strHosts = ['localhost:9200'];
 
-$client = Elasticsearch\ClientBuilder::create()
-    ->setHosts($hosts)
+$objClient = Elasticsearch\ClientBuilder::create()
+    ->setHosts($strHosts)
     ->build();
