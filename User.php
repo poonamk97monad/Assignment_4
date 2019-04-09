@@ -93,6 +93,7 @@ class User extends Connection
         }
     }
 
+
     public function contactUser() {
         $strName      = $_POST['name'];
         $strEmailId   = $_POST['email'];
@@ -113,7 +114,12 @@ class User extends Connection
         }
     }
 
-    public function getLastUser($strLastUser,$password) {
+    /**
+     * @param $strLastUser
+     * @param $password
+     * @return array|bool
+     */
+    public function getLastUser($strLastUser, $password) {
         $query        = "SELECT * FROM userdata WHERE email ='$strLastUser' and password ='$password'";
         $arrObjResult = $this->objConnection->query($query);
 
@@ -127,6 +133,10 @@ class User extends Connection
         return $arrStrFields;
     }
 
+    /**
+     * @param $intUserId
+     * @return bool
+     */
     public function isFavoritted($intUserId) {
         Predis\Autoloader::register();
         $redis   = new Predis\Client();
@@ -136,6 +146,9 @@ class User extends Connection
     }
 
 
+    /**
+     * @param $intUserId
+     */
     public function setFavorite($intUserId) {
         Predis\Autoloader::register();
         $redis   = new Predis\Client();

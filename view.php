@@ -1,10 +1,11 @@
 <?php
 
-include('Connection.php');
-include('User.php');
-require "predis/autoload.php";
-session_start();
+    include('Connection.php');
+    include('User.php');
+    require 'init.php';
+    require "predis/autoload.php";
 
+    session_start();
     if(!isset($_SESSION['userid'])) {
         # redirect to the login page
         header('Location: index.php?msg=' . urlencode('Login first.'));
@@ -18,9 +19,9 @@ session_start();
 <?php
 
     if(isset($_GET['fav'])) {
-        $strFav     = $_GET['fav'];
-        $intId      = $_GET['id'];
-        $strEmail   = $_GET['email'];
+        $strFavorite  = $_GET['fav'];
+        $intId        = $_GET['id'];
+        $strEmail     = $_GET['email'];
         (new User())->setFavorite($intId);
 
     }
@@ -28,7 +29,6 @@ session_start();
 ?>
 <?php
 
-require 'init.php';
 if(isset($_GET['search'])) {
 
     $strSearch   = $_GET['search'];
@@ -46,12 +46,9 @@ if(isset($_GET['search'])) {
                                 'filter' => ['term' => [ 'usertype' => $strUserType ]]
                         ]
                 ],
-            /*"settings" => [
-                "index" => [
-                    "sort.field" => ["fname"],
-                    "sort.order" => ["asc"]
-                ]
-            ]*/
+               "sort"=> [
+                  [ "_id"=> "asc" ]
+               ]
         ]
         ];
     $arrMixSql = $client->search($arrMixParams);
@@ -172,26 +169,13 @@ if($arrMixSql['hits'] >= 1) {
                                 <?php
                                 Predis\Autoloader::register();
                                 $redis = new Predis\Client();
-
-                                /*$results = $objUser->getLastUser($strUserId, $strPassword);
-
-                                foreach ($results as $key => $res) {
-
-                                    echo 'Id:' . $res['id'] . '<br>';
-                                    echo 'Name:' . $res['fname'] . $res['lname'] . '<br>';
-                                    echo 'Mob.no:' . $res['phone'] . '<br>';
-                                    echo 'About:' . $res['about'] . '<br>';
-                                    echo 'Usertype:' . $res['usertype'];
-
-                                }*/
                                 $arrUserLogin = $redis->lrange("lastlogin" ,0,50);
                                 foreach ($arrUserLogin as $strUser) {
                                     echo $strUser.'<br>';
                                 }
+                                echo '<hr>';
                                ?>
-
                             </h6>
-
                         </div>
                     </div>
                     <!--<h3>Favrites Users</h3>-->

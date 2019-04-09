@@ -39,58 +39,56 @@
           echo "<br/><a href='javascript:self.history.back();'>Go Back</a>";
       } else {
           // To insert with mysqli database
-          $objRegister = $objUser->registerUser();
+          $objRegister  = $objUser->registerUser();
 
-          $result = $objUser->getData();
+          $arrStrResult = $objUser->getData();
+          foreach ($arrStrResult as $intKey => $strResult) {
+              $intId         = $strResult['id'];
+              $strFristName  = $strResult['fname'];
+              $strLastName   = $strResult['lname'];
+              $strEmail      = $strResult['email'];
+              $intPhone      = $strResult['phone'];
+              $strAbout      = $strResult['about'];
+              $strUserType   = $strResult['usertype'];
 
-          foreach ($result as $key => $res) {
-              $intid       = $res['id'];
-              $strFname    = $res['fname'];
-              $strLname    = $res['lname'];
-              $strEmail    = $res['email'];
-              $intPhone    = $res['phone'];
-              $strAbout    = $res['about'];
-              $strUserType = $res['usertype'];
-
-              $indexed = $client->index([
-                  'index' => 'userdata',
-                  'type'  => 'user',
-                  'id'    => $intid,
-                  'body'  => [
-                      'id'       => $intid,
-                      'fname'    => $strFname,
-                      'lname'    => $strLname,
-                      'email'    => $strEmail,
-                      'phone'    => $intPhone,
-                      'about'    => $strAbout,
-                      'usertype' => $strUserType,
+              $arrMixIndexed = $client->index([
+                  'index'    => 'userdata',
+                  'type'     => 'user',
+                  'id'       => $intId,
+                  'body'     => [
+                          'id'       => $intId,
+                          'fname'    => $strFristName,
+                          'lname'    => $strLastName,
+                          'email'    => $strEmail,
+                          'phone'    => $intPhone,
+                          'about'    => $strAbout,
+                          'usertype' => $strUserType,
                   ]
               ]);
-               /*if ($indexed) {
-                    print_r($indexed);
+               /*if ($arrMixIndexed) {
+                    print_r($arrMixIndexed);
                }*/
           }
       }
   }
 
   else {
-    if(isset($_POST["login"])) {
-        /** @var object $obj */
-        $objLogin = $objAuth->loginUser();
+        if(isset($_POST["login"])) {
+            /** @var object $obj */
+            $objLogin = $objAuth->loginUser();
 
-        Predis\Autoloader::register();
-        $redis       = new Predis\Client();
-        $strUserId   = $_POST['userid'];
-        $strPassword = $_POST['password'];
-        $redis->connect('127.0.0.1', 6379);
-        echo "Last Login";
-        echo "<br><hr><br>";
-        //store data in redis list
-        $redis->lpush("lastlogin", $strUserId, date("M,d,Y h:i:s A"));
+            Predis\Autoloader::register();
+            $redis       = new Predis\Client();
+            $strUserId   = $_POST['userid'];
+            $strPassword = $_POST['password'];
+            $redis->connect('127.0.0.1', 6379);
+            echo "Last Login";
+            echo "<br><hr><br>";
+            //store data in redis list
+            $redis->lpush("lastlogin", $strUserId, date("M,d,Y h:i:s A"));
 
-    }
-
-    }
+        }
+  }
 
 
 ?>
@@ -129,68 +127,68 @@ if(isset($_POST["contact"])) {
         }
         else {
             switch ($strUserType) {
-                case 'Student':
+                case 'student':
                     $arrMixAllFields = $objStudent->updateFields();
-                    $result = $objUser->getData();
+                    $arrStrResult = $objUser->getData();
 
-                    foreach ($result as $key => $res) {
-                        $intid       = $res['id'];
-                        $strFname    = $res['fname'];
-                        $strLname    = $res['lname'];
-                        $strEmail    = $res['email'];
-                        $intPhone    = $res['phone'];
-                        $strAbout    = $res['about'];
-                        $strUserType = $res['usertype'];
+                    foreach ($arrStrResult as $intKey => $strResult) {
+                        $intId        = $strResult['id'];
+                        $strFristName = $strResult['fname'];
+                        $strLastName  = $strResult['lname'];
+                        $strEmail     = $strResult['email'];
+                        $intPhone     = $strResult['phone'];
+                        $strAbout     = $strResult['about'];
+                        $strUserType  = $strResult['usertype'];
 
-                        $indexed = $client->index([
+                        $arrMixIndexed = $client->index([
                             'index' => 'userdata',
                             'type'  => 'user',
-                            'id'    => $intid,
+                            'id'    => $intId,
                             'body'  => [
-                                'id'       => $intid,
-                                'fname'    => $strFname,
-                                'lname'    => $strLname,
+                                'id'       => $intId,
+                                'fname'    => $strFristName,
+                                'lname'    => $strLastName,
                                 'email'    => $strEmail,
                                 'phone'    => $intPhone,
                                 'about'    => $strAbout,
                                 'usertype' => $strUserType,
                             ]
                         ]);
-                        /*if ($indexed) {
-                             print_r($indexed);
+                        /*if ($arrMixIndexed) {
+                             print_r($arrMixIndexed);
                         }*/
                     }
 
                     break;
-                case 'Teacher':
+                case 'teacher':
                     $arrMixAllFields = $objTeacher->updateFields();
-                    $result = $objUser->getData();
+                    $arrStrResult = $objUser->getData();
 
-                    foreach ($result as $key => $res) {
-                        $intid       = $res['id'];
-                        $strFname    = $res['fname'];
-                        $strLname    = $res['lname'];
-                        $strEmail    = $res['email'];
-                        $intPhone    = $res['phone'];
-                        $strAbout    = $res['about'];
-                        $strUserType = $res['usertype'];
+                    foreach ($arrStrResult as $intKey => $strResult) {
+                        $intId        = $strResult['id'];
+                        $strFristName = $strResult['fname'];
+                        $strLastName  = $strResult['lname'];
+                        $strEmail     = $strResult['email'];
+                        $intPhone     = $strResult['phone'];
+                        $strAbout     = $strResult['about'];
+                        $strUserType  = $strResult['usertype'];
 
-                        $indexed = $client->index([
+                        $arrMixIndexed = $client->index([
                             'index' => 'userdata',
                             'type'  => 'user',
-                            'id'    => $intid,
+                            'id'    => $intId,
                             'body'  => [
-                                'id'       => $intid,
-                                'fname'    => $strFname,
-                                'lname'    => $strLname,
+                                'id'       => $intId,
+                                'fname'    => $strFristName,
+                                'lname'    => $strLastName,
                                 'email'    => $strEmail,
                                 'phone'    => $intPhone,
                                 'about'    => $strAbout,
                                 'usertype' => $strUserType,
                             ]
                         ]);
-                        /*if ($indexed) {
-                             print_r($indexed);
+                        /*if ($arrMixIndexed) {
+                             print_r($arrMixIndexed);
                         }*/
                     }
 
