@@ -44,7 +44,7 @@ class Student extends UserData
             }
         }
 
-        $strQuery = "update users SET $strQueryBuild where id = '$intId'";
+        $strQuery     = "update users SET $strQueryBuild where id = '$intId'";
         $arrObjResult = mysqli_query($this->objConnection, $strQuery);
             if (!$arrObjResult) {
                 die("record not update");

@@ -21,8 +21,7 @@ class Teacher extends UserData
         $intId           = $_POST['id'];
         $arrStrAllFields = $this->getAllFields();
         $arrStrFields    = $this->getFields();
-
-        $strQueryBuild = "";
+        $strQueryBuild   = "";
         foreach ($arrStrAllFields as $intCounter => $strField) {
             if(isset($_POST[$strField])) {
                 $strQueryBuild .= $strField.'="'.$_POST[$strField].'"';
@@ -39,7 +38,7 @@ class Teacher extends UserData
                 }
             }
         }
-        $strQuery = "update users SET $strQueryBuild where id = '$intId'";
+        $strQuery     = "update users SET $strQueryBuild where id = '$intId'";
         $arrObjResult = mysqli_query($this->objConnection, $strQuery);
         if (!$arrObjResult) {
             die("record not update");
